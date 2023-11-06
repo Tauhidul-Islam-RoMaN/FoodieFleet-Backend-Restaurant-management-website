@@ -2,7 +2,7 @@ const express = require('express');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 require("dotenv").config()
-const app =express()
+const app = express()
 const port = process.env.PORT || 5000
 
 app.use(cors())
@@ -23,6 +23,8 @@ const client = new MongoClient(uri, {
 
 const foodCollection = client.db("foodDB").collection("food")
 const userCollection = client.db("userDB").collection("user")
+const orderCollection = client.db("orderDB").collection("order")
+const purchaseCollection = client.db("purchaseDB").collection("purchase")
 
 async function run() {
   try {
@@ -30,19 +32,19 @@ async function run() {
     // await client.connect();
 
     // adding Food
-    app.post('/allFood',async (req,res)=> {
-        const newFood = req.body
-        console.log(newFood);
-        const result = await foodCollection.insertOne(newFood)
-        console.log(result);
-        res.send(result)
+    app.post('/allFood', async (req, res) => {
+      const newFood = req.body
+      console.log(newFood);
+      const result = await foodCollection.insertOne(newFood)
+      console.log(result);
+      res.send(result)
 
     })
     //getting food
-    app.get('/allFood', async(req,res) => {
+    app.get('/allFood', async (req, res) => {
       const cursor = foodCollection.find()
-        const result = await cursor.toArray()
-        res.send(result)
+      const result = await cursor.toArray()
+      res.send(result)
     })
 
     // getting single data of food
@@ -57,21 +59,56 @@ async function run() {
     });
 
     // adding users
-    app.post('/users',async (req,res)=> {
+    app.post('/users', async (req, res) => {
       const newUser = req.body
       console.log(newUser);
       const result = await userCollection.insertOne(newUser)
       console.log(result);
       res.send(result)
 
-  })
-  //getting users
-  app.get('/users', async(req,res) => {
-    const cursor = userCollection.find()
+    })
+    //getting users
+    app.get('/users', async (req, res) => {
+      const cursor = userCollection.find()
       const result = await cursor.toArray()
       res.send(result)
-  })
-    
+    })
+
+    // adding order
+    app.post('/order', async (req, res) => {
+      const newOrder = req.body
+      console.log(newOrder);
+      const result = await orderCollection.insertOne(newOrder)
+      console.log(result);
+      res.send(result)
+
+    })
+    //getting order
+    app.get('/order', async (req, res) => {
+      const cursor = orderCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+
+    // adding purchase
+    app.post('/purchase', async (req, res) => {
+      const purchasedOrder = req.body
+      console.log(purchasedOrder);
+      const result = await purchaseCollection.insertOne(purchasedOrder)
+      console.log(result);
+      res.send(result)
+    })
+    //getting purchase
+    app.get('/purchase', async (req, res) => {
+      const cursor = purchaseCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+
+
+
+
+
 
 
 
@@ -94,10 +131,10 @@ run().catch(console.dir);
 
 
 
-app.get( '/', (req,res) => {
-    res.send('assignment 11 is running')
+app.get('/', (req, res) => {
+  res.send('assignment 11 is running')
 })
 
-app.listen(port, ()=>{
-    console.log(`Assignment 11 is running on port ${port}`);
+app.listen(port, () => {
+  console.log(`Assignment 11 is running on port ${port}`);
 })
