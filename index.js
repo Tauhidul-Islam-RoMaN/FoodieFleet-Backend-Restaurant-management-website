@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 require("dotenv").config()
 const app =express()
@@ -30,7 +30,7 @@ async function run() {
     // await client.connect();
 
     // adding Food
-    app.post('/addFood',async (req,res)=> {
+    app.post('/allFood',async (req,res)=> {
         const newFood = req.body
         console.log(newFood);
         const result = await foodCollection.insertOne(newFood)
@@ -39,11 +39,22 @@ async function run() {
 
     })
     //getting food
-    app.get('/addFood', async(req,res) => {
+    app.get('/allFood', async(req,res) => {
       const cursor = foodCollection.find()
         const result = await cursor.toArray()
         res.send(result)
     })
+
+    // getting single data of food
+    app.get("/allFood/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {
+        _id: new ObjectId(id),
+      };
+      const result = await foodCollection.findOne(query);
+      console.log(result);
+      res.send(result);
+    });
 
     // adding users
     app.post('/users',async (req,res)=> {
