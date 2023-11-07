@@ -156,6 +156,13 @@ async function run() {
       res.send(result);
     });
 
+    // search option
+    // router.get("/allFood", async (req, res) => {
+    //   const searchQuery = req.query.foodName;
+    //     const results = await foodCollection.find({ foodName: { $regex: searchQuery, $options: "i" } });
+    //     res.json(results);
+        
+    // });
 
 
 
