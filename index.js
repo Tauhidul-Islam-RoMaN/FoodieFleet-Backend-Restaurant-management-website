@@ -99,6 +99,21 @@ async function run() {
       res.send(result)
     })
     //getting purchase
+    app.get('/purchase', async (req, res) => {
+      const cursor = purchaseCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+
+    app.get("/purchase/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {
+        _id: new ObjectId(id),
+      };
+      const result = await purchaseCollection.findOne(query);
+      console.log(result);
+      res.send(result);
+    });
     
 
     app.get('/updated/:id', async(req,res) => {
