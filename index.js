@@ -116,15 +116,6 @@ async function run() {
     });
     
 
-    app.get('/updated/:id', async(req,res) => {
-      const id=req.params.id
-      const query= {
-        _id: new ObjectId(id)
-      }
-      const result = await foodCollection.findOne(query)
-      res.send(result)
-    })
-
     // update food
     app.put("/update/:id", async (req, res) => {
       const id = req.params.id;
@@ -141,11 +132,13 @@ async function run() {
           origin: food.origin,
           price: food.price,
           description: food.description,
+          email: food.email,
+          name: food.name,
         },
       };
       const result = await foodCollection.updateOne(
         filter,
-        updatedUSer,
+        updatedFood,
         options
       );
       res.send(result);
