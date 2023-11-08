@@ -36,14 +36,14 @@ async function run() {
     // await client.connect();
 
     // adding Food
-    app.post('/jwt', async (req, res) => {
-      const newUser = req.body
-      // console.log(newUser);
-      // const result = await userCollection.insertOne(newUser)
-      // console.log(result);
-      res.send(newUser)
+    // app.post('/jwt', async (req, res) => {
+    //   const newUser = req.body
+    //   // console.log(newUser);
+    //   // const result = await userCollection.insertOne(newUser)
+    //   // console.log(result);
+    //   res.send(newUser)
 
-    })
+    // })
     // adding Food
     app.post('/allFood', async (req, res) => {
       const newFood = req.body
