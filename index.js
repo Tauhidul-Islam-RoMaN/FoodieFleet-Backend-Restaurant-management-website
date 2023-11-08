@@ -42,7 +42,12 @@ async function run() {
     })
     //getting food
     app.get('/allFood', async (req, res) => {
+      const page = parseInt(req.query.page);
+      const size = parseInt(req.query.size);
+      console.log('Pagination', page, size);
       const cursor = foodCollection.find()
+      .skip( (page-1) * size)
+      .limit(size)
       const result = await cursor.toArray()
       res.send(result)
     })
@@ -163,6 +168,13 @@ async function run() {
     //     res.json(results);
         
     // });
+
+    // pagination
+    app.get('/foodCount', async(req,res) => {
+      const count = await foodCollection.estimatedDocumentCount()
+      res.send({count})
+    })
+
 
 
 
