@@ -1,6 +1,10 @@
 const express = require('express');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+
+
 require("dotenv").config()
 const app = express()
 const port = process.env.PORT || 5000
@@ -32,6 +36,15 @@ async function run() {
     // await client.connect();
 
     // adding Food
+    app.post('/jwt', async (req, res) => {
+      const newUser = req.body
+      // console.log(newUser);
+      // const result = await userCollection.insertOne(newUser)
+      // console.log(result);
+      res.send(newUser)
+
+    })
+    // adding Food
     app.post('/allFood', async (req, res) => {
       const newFood = req.body
       console.log(newFood);
@@ -42,13 +55,20 @@ async function run() {
     })
     //getting food
     app.get('/allFood', async (req, res) => {
+
+      const projection ={
+        description:0,
+          email:0,
+          name:0,
+          origin:0,
+      }
       const page = parseInt(req.query.page);
       const size = parseInt(req.query.size);
       console.log('Pagination', page, size);
       const cursor = foodCollection.find()
       .skip( (page-1) * size)
       .limit(size)
-      const result = await cursor.toArray()
+      const result = await cursor.project(projection).toArray()
       res.send(result)
     })
 
