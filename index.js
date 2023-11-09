@@ -9,8 +9,47 @@ require("dotenv").config()
 const app = express()
 const port = process.env.PORT || 5000
 
-app.use(cors())
+app.use(cors(
+  {
+    origin: [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        // 'assignment-11-6b401.web.app',
+        // 'assignment-11-6b401.firebaseapp.com'
+
+    ],
+    credentials: true
+}
+))
 app.use(express.json())
+app.use(cookieParser())
+
+
+
+// const logger = async (req, res, next) => {
+//   console.log('Log: info', req.method, req.url, req.host, req.originalUrl);
+//   next()
+// }
+
+const verifyToken = async (req, res, next) => {
+  const token = req.cookies?.token
+  console.log('Value of token in middleware', token);
+  if (!token) {
+      return res.status(401).send({ message: 'not authorized' })
+  }
+  jwt.verify(token, process.env.secrete, (err, decoded) => {
+      // error
+      if (err) {
+          console.log(err);
+          return res.status(401).send({ message: 'Unauthorized Access' })
+      }
+      // ok
+      console.log('Value in the token', decoded);
+      req.user = decoded
+      next()
+  })
+
+}
 
 
 
@@ -35,15 +74,30 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
-    // adding Food
-    // app.post('/jwt', async (req, res) => {
-    //   const newUser = req.body
-    //   // console.log(newUser);
-    //   // const result = await userCollection.insertOne(newUser)
-    //   // console.log(result);
-    //   res.send(newUser)
+    
+    // token
+    app.post('/jwt', async(req,res) => {
+      const user = req.body;
+      console.log(user);
+      const token = jwt.sign(user, process.env.secrete, {expiresIn: '1h'})
+      res
+      .cookie('token', token, {
+          httpOnly:true,
+          secure:true,
+          // sameSite:'none'
+      })
+      .send({success:true})
+  })
 
-    // })
+  app.post('/logout', async(req,res) => {
+      const user =req.body;
+      console.log('logging out', user);
+      res.clearCookie('token' , {maxAge:0}).send({success:true})
+
+  })
+
+
+
     // adding Food
     app.post('/allFood', async (req, res) => {
       const newFood = req.body
@@ -95,7 +149,7 @@ async function run() {
 
     })
     //getting users
-    app.get('/users', async (req, res) => {
+    app.get('/users',verifyToken, async (req, res) => {
       const cursor = userCollection.find()
       const result = await cursor.toArray()
       res.send(result)
@@ -111,7 +165,7 @@ async function run() {
 
     })
     //getting order
-    app.get('/order', async (req, res) => {
+    app.get('/order', verifyToken, async (req, res) => {
       const cursor = orderCollection.find()
       const result = await cursor.toArray()
       res.send(result)
@@ -126,7 +180,7 @@ async function run() {
       res.send(result)
     })
     //getting purchase
-    app.get('/purchase', async (req, res) => {
+    app.get('/purchase', verifyToken, async (req, res) => {
       const cursor = purchaseCollection.find()
       const result = await cursor.toArray()
       res.send(result)
@@ -183,25 +237,12 @@ async function run() {
       res.send(result);
     });
 
-    // search option
-    // router.get("/allFood", async (req, res) => {
-    //   const searchQuery = req.query.foodName;
-    //     const results = await foodCollection.find({ foodName: { $regex: searchQuery, $options: "i" } });
-    //     res.json(results);
-        
-    // });
 
     // pagination
     app.get('/foodCount', async(req,res) => {
       const count = await foodCollection.estimatedDocumentCount()
       res.send({count})
     })
-
-
-
-
-
-
 
 
 
